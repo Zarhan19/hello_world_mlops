@@ -2,9 +2,9 @@ name: CI - Train and Save model
 
 on: #action on which workflow has to trigger
   push: 
-    branches: [main] #only when action is on main branch
-  pull_requests:
-    branches: [main]
+    branches: [ main ] #only when action is on main branch
+  pull_request:
+    branches: [ main ]
 
 jobs:
   matrix-pip: #this is the job name
@@ -28,3 +28,13 @@ jobs:
 
     - name: Install project dependencies
       run: python -m pip install -r requirements.txt
+
+    - name: Train the model
+      run: | #pip is used to provide multiple commands; ls -la artifacts is used to save the model to artifacts folder
+         python train.py
+         ls -la artifacts 
+
+    - name: Upload artifacts #Upload the model for if anyone wants to pull the model 
+      uses: actions/upload-artifact@v4
+      with: #indicate the artifacts to be uploaded
+        name: ml-artifacts-${{ matrix.python }}-${{ github.run_id }} #pyhton version and github run id is used to make the artifact name unique
